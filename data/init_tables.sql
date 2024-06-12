@@ -1,0 +1,7 @@
+CREATE TABLE user
+(
+  id            INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  name          VARCHAR(255) NOT NULL UNIQUE,
+  themes_count  INT UNSIGNED DEFAULT 0,
+  message_count INT UNSIGNED DEFAULT 0
+);
