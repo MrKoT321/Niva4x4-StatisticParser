@@ -5,7 +5,6 @@ namespace App\Parser;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
-use MongoDB\BSON\Document;
 use Psr\Http\Message\ResponseInterface;
 
 class RequestParser

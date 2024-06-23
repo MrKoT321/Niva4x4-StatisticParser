@@ -24,7 +24,7 @@ async function sendData()
     const data = {
         url: urlInput.value
     }
-    const response = await fetch("load_statistic.php", {
+    const response = await fetch("/load_statistic.php", {
         method: "POST",
         headers: {
             "Content-Type": "multipart/form-data"
