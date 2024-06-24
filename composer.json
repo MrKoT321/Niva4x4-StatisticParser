@@ -16,6 +16,7 @@
       "guzzlehttp/guzzle": "^7.8",
       "ext-dom": "*",
         "ramsey/uuid": "^4.7",
-      "ext-libxml": "*"
+      "ext-libxml": "*",
+      "ext-mbstring": "*"
     }
 }
