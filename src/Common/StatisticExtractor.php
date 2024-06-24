@@ -8,6 +8,7 @@ use App\Parser\StemmerPorter\StemmerPorterRussianLanguage;
 readonly class StatisticExtractor
 {
     private string $userStat;
+
     public function __construct(
         private string $userPost
     ) {
