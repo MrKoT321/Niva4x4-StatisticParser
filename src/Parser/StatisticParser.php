@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace App\Parser;
 
-use App\Model\StatisticFieldType;
+use App\Common\StatisticExtractor;
+use App\Common\StatisticFieldType;
 
 class StatisticParser
 {
@@ -24,46 +25,21 @@ class StatisticParser
             {
                 continue;
             }
-            $userStat = substr($userPost, strpos($userPost, '<td class="post_user">'));
             $userName = strip_tags(
                 substr($userPost,
                     strpos($userPost, '<div>'),
                     strpos($userPost, '</div>') - strpos($userPost, '<div>')
                 )
             );
-            $parsedUserStat = $this->parseUserStatistic($userStat);
-            $userPostText = substr($userPost, strpos($userPost, '<div class="post_text"'));
-            $countBr = substr_count($userPost, '<br>');
-            $countSmile = substr_count($userPost, '<img');
-            $countQuote = substr_count($userPost, '<blockquote class="quote">');
-
-            $result[$userName][StatisticFieldType::THEMES] = $parsedUserStat[StatisticFieldType::THEMES];
-            $result[$userName][StatisticFieldType::MESSAGES] = $parsedUserStat[StatisticFieldType::MESSAGES];
-            $result[$userName][StatisticFieldType::LINE_BREAKS] = $countBr;
-            $result[$userName][StatisticFieldType::SMILES] = $countSmile;
-            $result[$userName][StatisticFieldType::QUOTES] = $countQuote;
+            $result[$userName] = $this->extractStatistic($userPost);
         }
-
-        // распарсить блок по tr (скипать каждый второй tr, т.к. там просто полоса)
-        // взять инфу клиент
-        // взять инфу о сообщениях
 
         return $result;
     }
 
-    private function parseUserStatistic(string $userStat): array
+    private function extractStatistic(string $userPost): array
     {
-        $result = [];
-        preg_match('((\d+) / (\d+))', $userStat, $matches);
-        if ($matches && $matches[1] && $matches[2])
-        {
-            $result[StatisticFieldType::THEMES] = (int) $matches[1];
-            $result[StatisticFieldType::MESSAGES] = (int) $matches[2];
-            return $result;
-        }
-        preg_match('(Сообщений: (\d+))', $userStat, $matches);
-        $result[StatisticFieldType::THEMES] = null;
-        $result[StatisticFieldType::MESSAGES] = $matches[1] ? (int) $matches[1] : null;
-        return $result;
+        $extractor = new StatisticExtractor($userPost);
+        return $extractor->extractStatistics();
     }
 }

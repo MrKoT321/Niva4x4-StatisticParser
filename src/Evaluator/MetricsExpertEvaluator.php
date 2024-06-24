@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace App\Evaluator;
 
-use App\Model\StatisticFieldType;
-use App\Model\StatisticMetrics;
+use App\Common\StatisticFieldType;
+use App\Common\StatisticMetrics;
 
 class MetricsExpertEvaluator
 {
@@ -65,6 +65,10 @@ class MetricsExpertEvaluator
                         (int) $stat[$metric] / (int) $expertStat[StatisticMetrics::MESSAGES_IN_THEME_METRIC]
                     );
                 }
+                elseif ($metric == StatisticMetrics::WORDS_BASE_METRIC)
+                {
+                    $result[$userName][$metric] = $this->calculateWordsBaseDistance($stat[$metric], $expertStat[$metric]);
+                }
                 else
                 {
                     $result[$userName][$metric] = self::calculateDistance((int) $expertStat[$metric], (int) $stat[$metric]);
@@ -73,6 +77,49 @@ class MetricsExpertEvaluator
         }
 
         return $result;
+    }
+
+    private function calculateWordsBaseDistance(array $userStat, array $expertStat): float
+    {
+        $vectors = $this->createVectorsFromStatistics($userStat, $expertStat);
+        $userVector = $vectors[0];
+        $expertVector = $vectors[1];
+
+        $scalarMultiplication = 0;
+        $userVectorLen = 0;
+        $expertVectorLen = 0;
+
+        foreach ($expertVector as $base => $count)
+        {
+            $scalarMultiplication += $count * $userVector[$base];
+            $userVectorLen += sqrt($userVector[$base]);
+            $expertVectorLen += sqrt($count);
+        }
+
+        return abs($scalarMultiplication / ($userVectorLen + $expertVectorLen));
+    }
+
+    private function createVectorsFromStatistics(array $userStat, array $expertStat): array
+    {
+        $v1 = $userStat;
+        $v2 = $expertStat;
+        foreach ($userStat as $base => $count)
+        {
+            if (!isset($v2[$base]))
+            {
+                $v2[$base] = 0;
+            }
+        }
+
+        foreach ($expertStat as $base => $count)
+        {
+            if (!isset($v1[$base]))
+            {
+                $v1[$base] = 0;
+            }
+        }
+
+        return [$v1, $v2];
     }
 
     private function findExpert(array $statistic): string

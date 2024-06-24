@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model;
+namespace App\Common;
 
 readonly class StatisticFieldType
 {
@@ -11,4 +11,5 @@ readonly class StatisticFieldType
     public const SMILES = 'smile_count';
     public const QUOTES = 'quote_count';
     public const MESSAGES_IN_THEME = 'messages_in_theme';
+    public const WORDS_BASE = 'words_base';
 }

@@ -5,7 +5,7 @@ namespace App\Controller;
 
 use App\Environment;
 use App\Evaluator\MetricsExpertEvaluator;
-use App\Model\StatisticFieldType;
+use App\Common\StatisticFieldType;
 use App\Parser\StatisticParser;
 use App\Parser\RequestParser;
 
@@ -65,11 +65,13 @@ class StatisticController
         $result = [];
         $parser = new StatisticParser();
         $requestParser = new RequestParser();
+
         $pageCount = $requestParser->getPageCount($url);
         if ($pageCount == 0)
         {
             throw new \RuntimeException('Error in page request');
         }
+
         for ($pageNumber = 1; $pageNumber <= $pageCount; $pageNumber++)
         {
             $htmlData = $requestParser->getDataFromRequest($url, $pageNumber);
@@ -88,7 +90,7 @@ class StatisticController
     {
         foreach ($statistic as $userName => $statisticValue)
         {
-            if (!isset($result[$userName][StatisticFieldType::MESSAGES]))
+            if (!isset($result[$userName]))
             {
                 $result[$userName][StatisticFieldType::MESSAGES] = $statisticValue[StatisticFieldType::MESSAGES];
                 $result[$userName][StatisticFieldType::THEMES] = $statisticValue[StatisticFieldType::THEMES];
@@ -96,12 +98,34 @@ class StatisticController
                 $result[$userName][StatisticFieldType::SMILES] = 0;
                 $result[$userName][StatisticFieldType::QUOTES] = 0;
                 $result[$userName][StatisticFieldType::MESSAGES_IN_THEME] = 0;
+                $result[$userName][StatisticFieldType::WORDS_BASE] = [];
             }
             $result[$userName][StatisticFieldType::LINE_BREAKS] += (int) $statisticValue[StatisticFieldType::LINE_BREAKS];
             $result[$userName][StatisticFieldType::SMILES] += (int) $statisticValue[StatisticFieldType::SMILES];
             $result[$userName][StatisticFieldType::QUOTES] += (int) $statisticValue[StatisticFieldType::QUOTES];
             ++$result[$userName][StatisticFieldType::MESSAGES_IN_THEME];
+            $result[$userName][StatisticFieldType::WORDS_BASE] = $this->splitWordBaseStatistic(
+                $statisticValue[StatisticFieldType::WORDS_BASE],
+                $result[$userName][StatisticFieldType::WORDS_BASE]
+            );
         }
+    }
+
+    private function splitWordBaseStatistic(array $wordsBase, array $resultWordsBase): array
+    {
+        foreach ($wordsBase as $wordBase => $count)
+        {
+            if (!isset($resultWordsBase[$wordBase]))
+            {
+                $resultWordsBase[$wordBase] = $count;
+            }
+            else
+            {
+                $resultWordsBase[$wordBase] += $count;
+            }
+        }
+
+        return $resultWordsBase;
     }
 
     private function saveJsonStatisticToFile(array $statistic, string $url): string

@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace App\Model;
+namespace App\Common;
 
 class StatisticMetrics
 {
@@ -11,6 +11,7 @@ class StatisticMetrics
     public const SMILES_METRIC = StatisticFieldType::SMILES;
     public const QUOTES_METRIC = StatisticFieldType::QUOTES;
     public const MESSAGES_IN_THEME_METRIC = StatisticFieldType::MESSAGES_IN_THEME;
+    public const WORDS_BASE_METRIC = StatisticFieldType::WORDS_BASE;
 
     private const METRICS_COST = [
         self::THEMES_METRIC => 0.25,
@@ -19,6 +20,7 @@ class StatisticMetrics
         self::SMILES_METRIC => 0.5,
         self::QUOTES_METRIC => 0.25,
         self::MESSAGES_IN_THEME_METRIC => 0.1,
+        self::WORDS_BASE_METRIC => 0.5,
     ];
 
     private const METRICS = [
@@ -28,6 +30,7 @@ class StatisticMetrics
         self::SMILES_METRIC,
         self::QUOTES_METRIC,
         self::MESSAGES_IN_THEME_METRIC,
+        self::WORDS_BASE_METRIC,
     ];
 
     private const MEAN_VALUE_METRICS = [
